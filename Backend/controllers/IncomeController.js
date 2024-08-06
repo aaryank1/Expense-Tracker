@@ -13,16 +13,12 @@ const getUserIncome = async (req, res) => {
 }
 
 const addUserIncome = async (req, res) => {
-    const userId = req.params.id
     const userIncomeData = req.body;
 
     const userData = {
-        userId: userId,
+        userId: userIncomeData.userId,
         income: userIncomeData.income,
-        income_start_data_interval: {
-            start_date: userIncomeData.income_start_data_interval.start_date,
-            interval: userIncomeData.income_start_data_interval.interval,
-        }
+        income_start_data_interval: userIncomeData.income_start_data_interval
     }
 
     try {

@@ -1,10 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {assets} from '../assets/assets.js'
 import axios from 'axios'
 import { debounce } from 'lodash'
+import { UserContext } from '../Context/UserContext.jsx'
 
 const SignIn = () => {
+
+  const navigate = useNavigate();
+  const {setUserName, setRegUserId} = useContext(UserContext)
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +40,7 @@ const SignIn = () => {
   const validateEmail = async (email)=>{
     try {
       const response = await axios.get(`https://emailvalidation.abstractapi.com/v1/?api_key=${import.meta.env.VITE_EMAIL_VALIDATION_API_KEY}&email=${email}`);
-      console.log(response);
+      // console.log(response);
       response.data.deliverability === "DELIVERABLE" ? setValidEmail(true) : setValidEmail(false);
     } catch (error) {
       console.log(error);
@@ -66,10 +70,13 @@ const SignIn = () => {
 
       try {
         const registerUser = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/register`, userData);
-        // console.log(registerUser.data.success);
+        // console.log(registerUser.data);
         
         if(registerUser.data.success){
           setMessage(registerUser.data.message);
+          setUserName(username);
+          setRegUserId(registerUser.data.userId);
+          navigate('/incomeInfo')
         }
         else{
           alert(registerUser.data.message);

@@ -1,10 +1,11 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useContext} from 'react'
 import { assets } from '../assets/assets';
 import { Link } from 'react-router-dom'
 import axios from 'axios';
+import { UserContext } from '../Context/UserContext';
 
 const Login = () => {
-
+  const {setUserName, setRegUserId} = useContext(UserContext)
   const [email, setEmail] = useState("");
   const [pwd, setpwd] = useState("");
   const [message, setMessage] = useState("");
@@ -34,8 +35,15 @@ const Login = () => {
       password: pwd
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/login`, userInput);
-    console.log(response.data);
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/login`, userInput);
+      if(response.data.success){
+        setRegUserId(response.data.userId);
+        setUserName(response.data.username);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
