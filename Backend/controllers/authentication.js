@@ -12,10 +12,10 @@ const addUser = async (req, res) => {
         const checkUser = await userModel.findOne({username: username});
         const checkEmail = await userModel.findOne({email: email});
         if(checkUser){
-            res.json({success: false, message:"This Username already exists. Please try using numbers and special characters."});
+            res.json({success: false, error:"username", message:"This Username already exists. Please try using numbers and special characters."});
         }
         else if(checkEmail){
-            res.json({success: false, message:"Email Already Exists. Try Logging In"});
+            res.json({success: false, error:"email", message:"Email Already Exists. Try Logging In"});
         }
         else{
             bcrypt.hash(password, saltRounds, async (err, hash) => {
