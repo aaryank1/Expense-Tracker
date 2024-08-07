@@ -8,7 +8,7 @@ import { UserContext } from '../Context/UserContext.jsx'
 const SignIn = () => {
 
   const navigate = useNavigate();
-  const {setUserName, setRegUserId} = useContext(UserContext)
+  const {setUserName, setRegUserId, authState, setAuthState} = useContext(UserContext)
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -56,6 +56,10 @@ const SignIn = () => {
     }
   }, [email, debounceValidEmail]);
 
+  // useEffect(() => {
+  //   localStorage.setItem('authToken', authState);
+  // }, [authState]);
+
   const handleSubmit = async (e)=> {
     e.preventDefault();
     // console.log(validEmail);
@@ -76,6 +80,7 @@ const SignIn = () => {
           setMessage(registerUser.data.message);
           setUserName(username);
           setRegUserId(registerUser.data.userId);
+          setAuthState(true);
           navigate('/incomeInfo')
         }
         else{
@@ -88,7 +93,7 @@ const SignIn = () => {
     else{
       alert("Invalid Email Address.");
     }
-
+    
   }
 
   return (

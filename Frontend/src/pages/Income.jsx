@@ -1,20 +1,21 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../Context/UserContext'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 const Income = () => {
 
-  const { regUserId, setUserIncome } = useContext(UserContext);
+  const { regUserId, setUserIncome, authState } = useContext(UserContext);
   const [income, setIncome] = useState('');
   const [date, setDate] = useState('');
   const [interval, setInterval] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e)=>{
     e.preventDefault();
 
     const jsDate = new Date(date);
     console.log(jsDate.toISOString());
-    
 
     const incomeInfo = {
       userId: regUserId,
@@ -25,6 +26,8 @@ const Income = () => {
       }
     }
 
+    setUserIncome(income);
+
     try {
 
       const submitIncomeInfo = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/income`, incomeInfo);
@@ -32,10 +35,14 @@ const Income = () => {
       
     } catch (error) {
       console.log(error);
-      
     }
-
   }
+
+  useEffect(()=> {
+    if(!authState){
+      navigate('/signin');
+    }
+  }, [authState]);
 
   return (
     <div className='w-full h-screen flex justify-center items-center'>

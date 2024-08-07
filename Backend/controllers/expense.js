@@ -1,10 +1,11 @@
 import expenseModel from "../models/expenseModel.js";
 
 const getExpenses = async (req, res)=>{
-    const { userId } = req.body;
+    const { userId } = req.query;
     try {
         const expenses = await expenseModel.find({userId: userId});
-    res.send(expenses);
+        
+        res.send(expenses);
     } catch (error) {
         res.send(error)
     }
@@ -35,8 +36,7 @@ const addExpense = async (req, res)=>{
 const editExpense = async (req, res) => {
     const expenseId = req.params.id;
     const updates = req.body;
-    
-    
+
     try {
         const updateExpense = await expenseModel.findByIdAndUpdate({_id: expenseId}, updates, {new: true});
 

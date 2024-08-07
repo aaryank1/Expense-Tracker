@@ -1,15 +1,17 @@
-import React, {useState, useRef, useContext} from 'react'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import { assets } from '../assets/assets';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { UserContext } from '../Context/UserContext';
 
 const Login = () => {
-  const {setUserName, setRegUserId} = useContext(UserContext)
+  const {setUserName, regUserId, setRegUserId, authState, setAuthState} = useContext(UserContext)
   const [email, setEmail] = useState("");
   const [pwd, setpwd] = useState("");
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const [visibility, setVisibility] = useState(false);
+
+  const navigate = useNavigate();
 
   const pwdRef = useRef();
   const visibilityRef = useRef();
@@ -40,6 +42,11 @@ const Login = () => {
       if(response.data.success){
         setRegUserId(response.data.userId);
         setUserName(response.data.username);
+        setAuthState(true);
+        navigate('/spendwise')
+      }
+      else{
+        alert(response.data.message);
       }
     } catch (error) {
       console.log(error);

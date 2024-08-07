@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import axios from "axios";
 
 export const UserContext = createContext();
 
@@ -7,6 +8,7 @@ const UserContextProvider = (props) => {
     const [userName, setUserName] = useState(null);
     const [userIncome, setUserIncome] = useState(null);
     const [regUserId, setRegUserId] = useState(null);
+    const [authState, setAuthState] = useState(false);
     
     const userInfo = {
         userName,
@@ -14,7 +16,9 @@ const UserContextProvider = (props) => {
         userIncome,
         setUserIncome,
         regUserId,
-        setRegUserId
+        setRegUserId,
+        authState,
+        setAuthState,
     }
 
     return (
