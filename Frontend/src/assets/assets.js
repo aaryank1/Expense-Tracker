@@ -6,6 +6,7 @@ import hamburger from './hamburger.png'
 import bin from './bin.png'
 import options from './options.png'
 import expense from './expense.png'
+import edit from './edit.png'
 
 export const assets = {
     budget_icon,
@@ -15,5 +16,6 @@ export const assets = {
     hamburger,
     bin,
     options,
-    expense
+    expense,
+    edit
 }

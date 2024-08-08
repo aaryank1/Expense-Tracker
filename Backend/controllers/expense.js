@@ -11,6 +11,24 @@ const getExpenses = async (req, res)=>{
     }
 }
 
+const getCategoricalExpenses = async (req, res) =>{
+    const { userId } = req.query;
+    try {
+      const results = await expenseModel.aggregate([
+        { $match : { userId: userId }},
+        { $group: {
+            _id: "$category",
+            totalAmount: { $sum: "$amount" }
+        }}
+      ]);
+
+      res.json(results);
+    }
+    catch(error){
+        res.status(500).json({message: 'Server Error'});
+    }
+}
+
 const addExpense = async (req, res)=>{
     const userId = req.params.id
     const userExpense = req.body;
@@ -65,4 +83,4 @@ const deleteExpense = async (req, res) => {
     }
 }
 
-export {getExpenses, addExpense, editExpense, deleteExpense}
+export {getExpenses, getCategoricalExpenses, addExpense, editExpense, deleteExpense}
