@@ -29,6 +29,15 @@ const Login = () => {
     }
   }
 
+  useEffect(() => {
+    const checkLocalStorage = localStorage.getItem('validUserAuth')
+    if(checkLocalStorage){
+        setRegUserId(checkLocalStorage);
+        setAuthState(true);
+        navigate('/spendwise')
+    }
+  })
+
   const handleLogin = async (e) =>{
     e.preventDefault();
 
@@ -43,6 +52,7 @@ const Login = () => {
         setRegUserId(response.data.userId);
         setUserName(response.data.username);
         setAuthState(true);
+        localStorage.setItem('validUserAuth', response.data.userId);
         navigate('/spendwise')
       }
       else{

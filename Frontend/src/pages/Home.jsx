@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { Chart as ChartJS, Title, ArcElement, Tooltip, Legend } from 'chart.js' 
+import { Chart as ChartJS, Title, ArcElement, Tooltip, Legend, plugins } from 'chart.js' 
 import { Doughnut } from 'react-chartjs-2'
 import { assets } from '../assets/assets';
 import ExpenseModal from './AddExpenseModal';
@@ -19,8 +19,9 @@ ChartJS.register(
 )
 
 const Home = () => {
-  const { authState, regUserId, userExpenseData } = useContext(UserContext)
+  const { authState, regUserId } = useContext(UserContext)
   const navigate = useNavigate();
+  
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -45,7 +46,7 @@ const Home = () => {
           params: { userId: regUserId }
         });
         setExpenseData(expenses.data);
-        filterExpenses();
+        {regUserId && filterExpenses()};
       } 
       catch (error) {
         console.log(error);
@@ -107,7 +108,7 @@ const Home = () => {
       setAmount('');
       setOpen(false);
       fetchExpenses();
-      filterExpenses();
+      {regUserId && filterExpenses()};
 
     } catch (error) {
       console.log(error);
@@ -126,7 +127,7 @@ const Home = () => {
       // console.log(edit.data);
       toast.success("Expense Editted Successfully");
       fetchExpenses();
-      filterExpenses();
+      regUserId && filterExpenses();
       setTitle('')
       setCategory('')
       setAmount('')
@@ -144,7 +145,7 @@ const Home = () => {
       setOpenDelete(false);
       toast.success("Expense Deleted Successfully");
       fetchExpenses();
-      filterExpenses();
+      regUserId && filterExpenses();
     } catch (error) {
       console.log(error);
     }
@@ -158,14 +159,22 @@ const Home = () => {
       label: 'Expense',
       data: categoryTotals,
       backgroundColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
-      // borderColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
       hoverOffset: 10,
     }]
   }
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels:{
+          font: {
+            size: 15
+          },
+        }
+      }
+    }
   }
 
   return (
@@ -174,8 +183,10 @@ const Home = () => {
         <img className='w-40 h-full' src={assets.logo} alt="" />
         <img onClick={handleHamburg} className='w-8 h-8 mr-4' src={assets.hamburger} alt="" />
       </div>
+      
+      <h1 className='font-bold text-3xl'>Expense Analytics</h1>
 
-      <div className='w-full flex justify-center md:w-3/5 md:h-4/5'>
+      <div className='relative w-full sm:w-4/5 md:w-3/5 lg:2/5 flex justify-center'>
         <Doughnut className='w-full'
           data={data}
           options = {options}
@@ -183,8 +194,8 @@ const Home = () => {
         </Doughnut>
       </div>
 
-      <div className='flex justify-center items-center bg-green-600 px-4 py-2 rounded-3xl text-white border-none'>
-        <button onClick={()=>setOpen(true)} type="button">Add Expense</button>
+      <div className=' flex justify-center items-center bg-green-600 px-4 py-2 rounded-3xl text-white border-none'>
+        <button className='md:w-72 md:h-8 md:text-xl' onClick={()=>setOpen(true)} type="button">Add Expense</button>
         <ExpenseModal open={open} onClose={() => setOpen(false)}>
           <div className='w-full flex flex-col gap-8 items-center' >
             <div className='flex flex-col gap-4 items-center'>

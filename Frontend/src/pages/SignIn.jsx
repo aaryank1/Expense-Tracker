@@ -60,6 +60,15 @@ const SignIn = () => {
   //   localStorage.setItem('authToken', authState);
   // }, [authState]);
 
+  useEffect(() => {
+    const checkLocalStorage = localStorage.getItem('validUserAuth')
+    if(checkLocalStorage){
+        setRegUserId(checkLocalStorage);
+        setAuthState(true);
+        navigate('/spendwise')
+    }
+  })
+
   const handleSubmit = async (e)=> {
     e.preventDefault();
     // console.log(validEmail);
@@ -81,6 +90,7 @@ const SignIn = () => {
           setUserName(username);
           setRegUserId(registerUser.data.userId);
           setAuthState(true);
+          localStorage.setItem('validUserAuth', registerUser.data.userId);
           navigate('/incomeInfo')
         }
         else{
