@@ -9,6 +9,7 @@ import ExpenseModal from './AddExpenseModal';
 import axios from 'axios';
 import { toast } from 'react-toastify'
 import EditExpenseModal from './EditExpenseModel';
+import DeleteExpenseModal from './DeleteExpenseModal';
 
 ChartJS.register(
   ArcElement,
@@ -21,7 +22,8 @@ const Home = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [editingItemId, setEditingItemId] = useState(null);
+  const [openDelete, setOpenDelete] = useState(false);
+
   const [expenseData, setExpenseData] = useState([]);
   const [expenseId, setExpenseId] = useState('');
 
@@ -55,24 +57,9 @@ const Home = () => {
       }
     }
 
-    const filterExpenses = () => {
-      const essentialExpense = expenseData.filter((item)=>item.category === "Essentials");
-      let sumEssential=0;
-      let sumEntertainment=0;
-      let sumEducation=0;
-      let sumHousing=0;
-      let sumHealthCare=0;
-      let sumClothing=0;
-      let sumPersonal=0;
-      let sumInvestments=0;
-      let sumMisc=0;
-      essentialExpense.forEach((item) => sum+=item.amount)
-      setEssentials(sum)
-    }
 
   useEffect(()=>{
     fetchExpenses();
-    filterExpenses();
   }, [])
 
   useEffect(()=>{
@@ -123,7 +110,6 @@ const Home = () => {
       setAmount('');
       setOpen(false);
       fetchExpenses();
-      filterExpenses();
 
     } catch (error) {
       console.log(error);
@@ -142,14 +128,23 @@ const Home = () => {
       // console.log(edit.data);
       toast.success("Expense Editted Successfully");
       fetchExpenses();
-      filterExpenses();
+      setOpenEdit(false);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const handleDelete = () => {
-    
+  const handleDelete = async (e) => {
+    try {
+      e.preventDefault();
+      
+      const deleteExpense = await axios.delete(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${expenseId}`);
+      setOpenDelete(false);
+      toast.success("Expense Deleted Successfully");
+      fetchExpenses();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -232,19 +227,20 @@ const Home = () => {
 
           <div className='flex flex-row justify-center items-center gap-8'>
             <img onClick={()=>{
-              setEditingItemId(expense.userId);
+              setOpenEdit(true);
               setTitle(expense.title);
               setCategory(expense.category)
               setAmount(expense.amount)
               setExpenseId(expense._id);
               }} className='w-8 cursor-pointer' src={assets.edit} alt="" />
 
-            <EditExpenseModal openEdit={editingItemId !== null} onClose={() => {setEditingItemId(null);setTitle('');
+            <EditExpenseModal openEdit={openEdit} onClose={() => {setOpenEdit(false);setTitle('');
               setCategory('');
-              setAmount('');}}>
+              setAmount('');
+              setExpenseId('');}}>
               <div className='w-full flex flex-col gap-8 items-center' >
                 <div className='flex flex-col gap-4 items-center'>
-                <img className='w-20 mt-4' src={assets.edit} alt="" />
+                <img className='w-20 mt-4' src={assets.edit} alt="edit" />
                 <h1 className='text-3xl font-bold'>Edit Expense</h1>
                 </div>
 
@@ -278,19 +274,43 @@ const Home = () => {
                   </div>
 
                   <div className='flex gap-4 justify-evenly items-center mt-4'>
-                    <button onClick={()=>{setEditingItemId(null);
+                    <button onClick={()=>{setOpenEdit(false);
                       setTitle('');
                       setCategory('');
                       setAmount('');
                     }} className='text-white bg-red-600 px-4 py-2 rounded-lg' type='button'>Cancel</button>
-                    <button onClick={()=>setEditingItemId(null)} className='text-white bg-green-600 px-4 py-2 rounded-lg' type="submit">Submit</button>
+                    <button className='text-white bg-green-600 px-4 py-2 rounded-lg' type="submit">Submit</button>
+                  </div>
+
+                </form>
+              </div>
+            </EditExpenseModal>
+            <img onClick={() => {
+              setExpenseId(expense._id);
+              setOpenDelete(true);
+              }} className='w-8 cursor-pointer' src={assets.bin} alt="" />
+            <DeleteExpenseModal openDelete = {openDelete} onClose={()=> setOpenDelete(false)}>
+              <div className='w-full flex flex-col gap-8 items-center'>
+                <div className='flex flex-col gap-4 items-center'>
+                  <img className='w-20 mt-4' src={assets.bin} alt="bin" />
+                  <h1 className='text-3xl font-bold'>Delete Expense</h1>
+                </div>
+
+                <form onSubmit={handleDelete} className='flex flex-col text-center' method='delete'>
+
+                  <p className='text-xl text-gray-500'>Are You Sure You Wish To Delete this Expense?</p>
+
+                  <div className='flex justify-evenly w-full items-center mt-4 font-bold'>
+                    <button onClick={()=>{setOpenDelete(false);
+                      setExpenseId('');
+                    }} className='bg-gray-400 px-6 py-3 rounded-lg' type='button'>Cancel</button>
+                    <button className='bg-red-600 px-6 py-3 rounded-lg' type='submit'>Delete</button>
                   </div>
 
                 </form>
 
               </div>
-            </EditExpenseModal>
-            <img onClick={handleDelete(expense.userId)} className='w-8 cursor-pointer' src={assets.bin} alt="" />
+            </DeleteExpenseModal>
           </div>
 
         </div>)
