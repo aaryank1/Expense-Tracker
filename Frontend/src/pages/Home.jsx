@@ -158,7 +158,8 @@ const Home = () => {
       label: 'Expense',
       data: categoryTotals,
       backgroundColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
-      borderColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
+      // borderColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
+      hoverOffset: 10,
     }]
   }
 
