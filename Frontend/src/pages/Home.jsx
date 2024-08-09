@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js' 
+import { Chart as ChartJS, Title, ArcElement, Tooltip, Legend } from 'chart.js' 
 import { Doughnut } from 'react-chartjs-2'
 import { assets } from '../assets/assets';
 import ExpenseModal from './AddExpenseModal';
@@ -14,7 +14,8 @@ import DeleteExpenseModal from './DeleteExpenseModal';
 ChartJS.register(
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
+  Title
 )
 
 const Home = () => {
@@ -27,20 +28,13 @@ const Home = () => {
   const [expenseData, setExpenseData] = useState([]);
   const [expenseId, setExpenseId] = useState('');
 
+  const [categoryData, setCategoryData] = useState([]);
+
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
 
-  // Set Expenditures of All Categories
-  const [essentials, setEssentials] = useState(0);
-  const [entertainment, setEntertainment] = useState(0);
-  const [education, setEducation] = useState(0);
-  const [housing, setHousing] = useState(0);
-  const [healthcare, setHealthCare] = useState(0);
-  const [clothing, setClothing] = useState(0);
-  const [Personal, setPersonal] = useState(0);
-  const [investment, setInvestment] = useState(0);
-  const [misc, setMisc] = useState(0);
+  const categories = ['Essentials', 'Entertainment', 'Education', 'Housing', 'HealthCare', 'Clothing', 'Personal Care', 'Investments', 'Miscellaneous'];
 
   // console.log(authState);  
 
@@ -51,12 +45,23 @@ const Home = () => {
           params: { userId: regUserId }
         });
         setExpenseData(expenses.data);
+        filterExpenses();
       } 
       catch (error) {
         console.log(error);
       }
     }
 
+    const filterExpenses = async () => {
+      try{
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/spendwise/category/expenses?userId=${regUserId}`);
+        setCategoryData(response.data);
+        // console.log(response.data);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
 
   useEffect(()=>{
     fetchExpenses();
@@ -68,19 +73,11 @@ const Home = () => {
     }
   }, [authState])
 
-  const data = {
-    labels: ['Essentials', 'Entertainment', 'Education', 'Housing', 'HealthCare', 'Clothing', 'Personal', 'Investments', 'Miscellaneous'],
-    datasets: [{
-      label: 'Poll',
-      data: [3,6],
-      backgroundColor: ['black', 'red'],
-      borderColor: ['black', 'red'],
-    }]
-  }
+  const categoryTotals = categories.map(category => {
+    const categoricalData = categoryData.find(item => item._id===category);
 
-  const options = {
-
-  }
+    return categoricalData ? categoricalData.totalAmount : 0;
+  })
 
   const handleHamburg = () => {
 
@@ -110,6 +107,7 @@ const Home = () => {
       setAmount('');
       setOpen(false);
       fetchExpenses();
+      filterExpenses();
 
     } catch (error) {
       console.log(error);
@@ -128,6 +126,10 @@ const Home = () => {
       // console.log(edit.data);
       toast.success("Expense Editted Successfully");
       fetchExpenses();
+      filterExpenses();
+      setTitle('')
+      setCategory('')
+      setAmount('')
       setOpenEdit(false);
     } catch (error) {
       console.log(error);
@@ -142,9 +144,27 @@ const Home = () => {
       setOpenDelete(false);
       toast.success("Expense Deleted Successfully");
       fetchExpenses();
+      filterExpenses();
     } catch (error) {
       console.log(error);
     }
+  }
+
+
+
+  const data = {
+    labels: categories,
+    datasets: [{
+      label: 'Expense',
+      data: categoryTotals,
+      backgroundColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
+      borderColor: ['#4A90E2', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0', '#F6C23E', '#E74A3B', '#5A9BD4', '#9B59B6'],
+    }]
+  }
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false
   }
 
   return (
@@ -154,8 +174,8 @@ const Home = () => {
         <img onClick={handleHamburg} className='w-8 h-8 mr-4' src={assets.hamburger} alt="" />
       </div>
 
-      <div>
-        <Doughnut
+      <div className='w-full flex justify-center md:w-3/5 md:h-4/5'>
+        <Doughnut className='w-full'
           data={data}
           options = {options}
         >

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import expenseModel from "../models/expenseModel.js";
 
 const getExpenses = async (req, res)=>{
@@ -13,18 +14,21 @@ const getExpenses = async (req, res)=>{
 
 const getCategoricalExpenses = async (req, res) =>{
     const { userId } = req.query;
+    let objectId;
     try {
+        objectId = new mongoose.Types.ObjectId(userId);
       const results = await expenseModel.aggregate([
-        { $match : { userId: userId }},
+        { $match : { userId: objectId }},
         { $group: {
             _id: "$category",
             totalAmount: { $sum: "$amount" }
         }}
       ]);
 
-      res.json(results);
+      res.send(results);
     }
     catch(error){
+        console.log(error);
         res.status(500).json({message: 'Server Error'});
     }
 }
