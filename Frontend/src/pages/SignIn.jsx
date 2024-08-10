@@ -40,7 +40,7 @@ const SignIn = () => {
   const validateEmail = async (email)=>{
     try {
       const response = await axios.get(`https://emailvalidation.abstractapi.com/v1/?api_key=${import.meta.env.VITE_EMAIL_VALIDATION_API_KEY}&email=${email}`);
-      // console.log(response);
+
       response.data.deliverability === "DELIVERABLE" ? setValidEmail(true) : setValidEmail(false);
     } catch (error) {
       console.log(error);

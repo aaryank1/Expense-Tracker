@@ -10,6 +10,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify'
 import EditExpenseModal from './EditExpenseModel';
 import DeleteExpenseModal from './DeleteExpenseModal';
+import Dropdown from './Dropdown';
+import EditIncomeModal from './EditIncomeModal';
 
 ChartJS.register(
   ArcElement,
@@ -19,12 +21,17 @@ ChartJS.register(
 )
 
 const Home = () => {
-  const { authState, regUserId } = useContext(UserContext)
+  const { authState, regUserId, setRegUserId, setUserIncome } = useContext(UserContext)
   const navigate = useNavigate();
   
+  const [ham, setHam] = useState(false);
+  const imgRef = useRef();
+  const menuRef = useRef();
+
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openModIncome, setOpenModIncome] = useState(false);
 
   const [expenseData, setExpenseData] = useState([]);
   const [expenseId, setExpenseId] = useState('');
@@ -34,6 +41,11 @@ const Home = () => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
+
+  const [userIncomeId, setUserIncomeId] = useState('');
+  const [income, setIncome] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [incomeInterval, setIncomeInterval] = useState('');
 
   const categories = ['Essentials', 'Entertainment', 'Education', 'Housing', 'HealthCare', 'Clothing', 'Personal Care', 'Investments', 'Miscellaneous'];
 
@@ -64,8 +76,61 @@ const Home = () => {
       }
     }
 
+    const fetchIncome = async () =>{
+      try{
+        const userId = localStorage.getItem('validUserAuth');
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/user/income/${userId}`);
+
+        const date = new Date(response.data.incomeDateInterval.startDate)
+        const formatDate = date.toISOString().split('T')[0];
+        setUserIncomeId(response.data._id);
+        setIncome(response.data.income);
+        setStartDate(formatDate);
+        setIncomeInterval(response.data.incomeDateInterval.interval);
+        setUserIncome(response.data);
+        // console.log(response.data.incomeDateInterval.interval);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+
+    const editIncome = async (e)=>{
+      e.preventDefault();
+      setOpenModIncome(false);
+
+      const incomeId = userIncomeId;
+      
+      const jsDate = new Date(startDate)
+      const dateInt = {
+        startDate: jsDate,
+        interval: incomeInterval
+      }
+      const updateIncomeData = {
+        income: income,
+        incomeDateInterval: dateInt
+      }
+
+      try{        
+        const response = await axios.patch(`${import.meta.env.VITE_SERVER_URL}/user/income/${incomeId}`, updateIncomeData);
+        // toast.success("Income Modified Successfully", {
+        //   position: 'top-right',
+        //   autoClose: 3000,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined
+        // });
+      }
+      catch(error){
+        console.log(error);
+      }
+
+    }
+
   useEffect(()=>{
     fetchExpenses();
+    fetchIncome();
   }, [])
 
   useEffect(()=>{
@@ -81,8 +146,20 @@ const Home = () => {
   })
 
   const handleHamburg = () => {
-
+    setHam(false);
   }
+
+  const handleIncomeMod = () => {
+    setOpenModIncome(true)
+  }
+
+  window.addEventListener('click', (e)=>{
+    if(e.target !== menuRef.current && e.target!== imgRef.current){
+      setHam(false);
+    }
+  })
+
+
 
   const handleExpense = async (e) => {
 
@@ -102,7 +179,7 @@ const Home = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${regUserId}`, userInput);
-      toast.success(`${response.data}`, {position: "top-right"});
+      // toast.success(`${response.data}`, {position: "top-right"});
       setTitle('');
       setCategory('');
       setAmount('');
@@ -125,7 +202,7 @@ const Home = () => {
       }
       const edit = await axios.patch(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${expenseId}`, editData);
       // console.log(edit.data);
-      toast.success("Expense Editted Successfully");
+      // toast.success("Expense Editted Successfully");
       fetchExpenses();
       regUserId && filterExpenses();
       setTitle('')
@@ -143,7 +220,7 @@ const Home = () => {
       
       const deleteExpense = await axios.delete(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${expenseId}`);
       setOpenDelete(false);
-      toast.success("Expense Deleted Successfully");
+      // toast.success("Expense Deleted Successfully");
       fetchExpenses();
       regUserId && filterExpenses();
     } catch (error) {
@@ -181,17 +258,43 @@ const Home = () => {
     <div className='flex flex-col items-center gap-4'>
       <div className='flex items-center justify-between gap-8 bg-gray-500 w-full h-16'>
         <img className='w-40 h-full' src={assets.logo} alt="" />
-        <img onClick={handleHamburg} className='w-8 h-8 mr-4' src={assets.hamburger} alt="" />
+        <img ref={imgRef} onClick={()=>setHam(!ham)} className='w-12 h-12 mr-4 p-2 cursor-pointer hover:bg-slate-600' src={assets.hamburger} alt="" />
+        { ham && <Dropdown ref={menuRef} handleCloseOpts={handleHamburg} handleMod={handleIncomeMod} />}
       </div>
+
+      <EditIncomeModal openModIncome={openModIncome} onClose={()=>setOpenModIncome(false)}>
+        <form onSubmit={editIncome} className='flex flex-col justify-between border text-3xl p-8 gap-8 rounded-lg' method="patch">
+          <div className='flex flex-col gap-4'>
+            <label htmlFor="income">Monthly Income</label>
+            <input onChange={(e)=>{setIncome(e.target.value)}} className='border border-black rounded-md p-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' type="number" name="income" id="income" value={income} />
+          </div>
+
+          <div className='flex flex-col gap-4'>
+            <label htmlFor="startDate">Pay-Day</label>
+            <input onChange={(e)=>{setStartDate(e.target.value)}} className='border border-black rounded-md p-1' type="date" name="startDate" id="startDate" value={startDate} />
+          </div>
+
+          <div className='flex flex-col gap-4'>
+            <label htmlFor="interval">Interval</label>
+            <input onChange={(e)=>{setIncomeInterval(e.target.value)}} className='border border-black rounded-md p-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' type="number" name="interval" id="interval" value={incomeInterval} />
+          </div>
+
+          <button className='border border-black rounded-md p-2 bg-green-600 text-white border-none' type="submit">Submit</button>
+        </form>
+      </EditIncomeModal>
       
       <h1 className='font-bold text-3xl'>Expense Analytics</h1>
 
-      <div className='relative w-full sm:w-4/5 md:w-3/5 lg:2/5 flex justify-center'>
+      <div className='w-full sm:w-4/5 md:w-3/5 lg:2/5 flex justify-center lg:justify-evenly'>
         <Doughnut className='w-full'
           data={data}
           options = {options}
         >
         </Doughnut>
+        
+        <div className='hidden flex-col gap-4 lg:flex'>
+          abdcd
+        </div>
       </div>
 
       <div className=' flex justify-center items-center bg-green-600 px-4 py-2 rounded-3xl text-white border-none'>

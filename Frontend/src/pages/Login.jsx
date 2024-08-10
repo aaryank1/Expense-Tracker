@@ -53,7 +53,7 @@ const Login = () => {
         setUserName(response.data.username);
         setAuthState(true);
         localStorage.setItem('validUserAuth', response.data.userId);
-        navigate('/spendwise')
+        navigate('/spendwise');
       }
       else{
         alert(response.data.message);

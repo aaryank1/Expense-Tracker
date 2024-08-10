@@ -16,12 +16,14 @@ const Income = () => {
 
     const jsDate = new Date(date);
     console.log(jsDate.toISOString());
+    console.log(jsDate);
+    
 
     const incomeInfo = {
       userId: regUserId,
       income: income,
-      income_date_interval:{
-        start_date: jsDate,
+      incomeDateInterval:{
+        startDate: jsDate,
         interval: interval
       }
     }
@@ -32,6 +34,8 @@ const Income = () => {
 
       const submitIncomeInfo = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/income`, incomeInfo);
       console.log(submitIncomeInfo);
+      
+      navigate('/spendwise')
       
     } catch (error) {
       console.log(error);

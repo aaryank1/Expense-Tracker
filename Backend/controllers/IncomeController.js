@@ -1,10 +1,12 @@
 import incomeModel from "../models/incomeModel.js";
+import mongoose from "mongoose";
 
 const getUserIncome = async (req, res) => {
     const id = req.params.id;
+    // const userId = new mongoose.Types.ObjectId(id);
     
     try {
-        const getIncomeData = await incomeModel.find({userId: id});
+        const getIncomeData = await incomeModel.findOne({userId: id});
         res.send(getIncomeData);
     } catch (error) {
         console.log(error);
@@ -18,7 +20,7 @@ const addUserIncome = async (req, res) => {
     const userData = {
         userId: userIncomeData.userId,
         income: userIncomeData.income,
-        income_start_data_interval: userIncomeData.income_start_data_interval
+        incomeDateInterval: userIncomeData.incomeDateInterval
     }
 
     try {
