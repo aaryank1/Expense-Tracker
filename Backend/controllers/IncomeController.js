@@ -20,7 +20,7 @@ const addUserIncome = async (req, res) => {
     const userData = {
         userId: userIncomeData.userId,
         income: userIncomeData.income,
-        incomeDateInterval: userIncomeData.incomeDateInterval
+        startDate: userIncomeData.startDate
     }
 
     try {

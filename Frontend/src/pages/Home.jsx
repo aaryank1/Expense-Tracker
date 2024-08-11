@@ -13,6 +13,9 @@ import EditExpenseModal from './EditExpenseModel';
 import DeleteExpenseModal from './DeleteExpenseModal';
 import Dropdown from './Dropdown';
 import EditIncomeModal from './EditIncomeModal';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable'
 
 ChartJS.register(
   ArcElement,
@@ -47,7 +50,8 @@ const Home = () => {
   const [userIncomeId, setUserIncomeId] = useState('');
   const [income, setIncome] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [incomeInterval, setIncomeInterval] = useState('');
+
+  const doughnutRef = useRef();
 
   const categories = ['Essentials', 'Entertainment', 'Education', 'Housing', 'HealthCare', 'Clothing', 'Personal Care', 'Investments', 'Miscellaneous'];
 
@@ -88,7 +92,7 @@ const Home = () => {
         setTotalExpense(response.data[0].totalExpense);
       }
       catch(error){
-        console.log(error);
+        // console.log(error);
       }
     }
 
@@ -97,14 +101,12 @@ const Home = () => {
         const userId = localStorage.getItem('validUserAuth');
         const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/user/income/${userId}`);
 
-        const date = new Date(response.data.incomeDateInterval.startDate)
+        const date = new Date(response.data.startDate)
         const formatDate = date.toISOString().split('T')[0];
         setUserIncomeId(response.data._id);
         setIncome(response.data.income);
         setStartDate(formatDate);
-        setIncomeInterval(response.data.incomeDateInterval.interval);
         setUserIncome(response.data.income);
-        // console.log(response.data.incomeDateInterval.interval);
       }
       catch(error){
         console.log(error);
@@ -118,13 +120,10 @@ const Home = () => {
       const incomeId = userIncomeId;
       
       const jsDate = new Date(startDate)
-      const dateInt = {
-        startDate: jsDate,
-        interval: incomeInterval
-      }
+
       const updateIncomeData = {
         income: income,
-        incomeDateInterval: dateInt
+        startDate: jsDate,
       }
 
       try{        
@@ -143,7 +142,9 @@ const Home = () => {
   useEffect(()=>{
     fetchExpenses();
     fetchIncome();
-    fetchTotalExpense();
+    if(expenseData){
+      fetchTotalExpense();
+    }
   }, [])
 
   useEffect(()=>{
@@ -205,6 +206,42 @@ const Home = () => {
       toast.error("Error Adding Expense")
       console.log(error);
     }
+  }
+
+  const handleDownload = async () => {
+    const doc = new jsPDF();
+
+    const canvas = html2canvas(doughnutRef.current);
+    const imgData = (await canvas).toDataURL('image/png')
+
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold'); // Set font to bold
+
+    // Title text
+    const title = 'Expense Report';
+
+    // Calculate the x-coordinate to center the title
+    const pageWidth = doc.internal.pageSize.width;
+    const textWidth = doc.getTextWidth(title);
+    const x = (pageWidth - textWidth) / 2;
+
+    // Add title to PDF
+    doc.text(title, x, 22); // Centered title
+
+    const underlineY = 24; // Y-coordinate for the underline (just below the text)
+    const margin = 10; // Margin on the left side
+    doc.setLineWidth(0.5); // Line width for the underline
+    doc.line(x - margin, underlineY, x + textWidth + margin, underlineY);
+
+    doc.addImage(imgData, 'PNG', 8, 30, 200, 100);
+
+    doc.autoTable({
+      startY: 160,
+      head: [['Date', 'Description', 'Amount']],
+      body: expenseData.map(expense => [expense.title, expense.category, `INR ${expense.amount}`])
+    });
+
+    doc.save('expense-report.pdf');
   }
 
   const handleEdit = async (e) => {
@@ -293,11 +330,6 @@ const Home = () => {
             <input onChange={(e)=>{setStartDate(e.target.value)}} className='border border-black rounded-md p-1' type="date" name="startDate" id="startDate" value={startDate} />
           </div>
 
-          <div className='flex flex-col gap-4'>
-            <label htmlFor="interval">Interval</label>
-            <input onChange={(e)=>{setIncomeInterval(e.target.value)}} className='border border-black rounded-md p-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' type="number" name="interval" id="interval" value={incomeInterval} />
-          </div>
-
           <button className='border border-black rounded-md p-2 bg-green-600 text-white border-none' type="submit">Submit</button>
         </form>
       </EditIncomeModal>
@@ -305,7 +337,7 @@ const Home = () => {
       <h1 className='font-bold text-3xl'>Expense Analytics</h1>
 
       <div className='w-full flex justify-evenly items-center'>
-        <div className='w-full sm:w-4/5 md:w-3/5 flex justify-center lg:justify-between items-center'>
+        <div ref={doughnutRef} className='w-full sm:w-4/5 md:w-3/5 flex justify-center lg:justify-between items-center'>
           <Doughnut className='w-full'
             data={data}
             options = {options}
@@ -326,8 +358,8 @@ const Home = () => {
         </div>
       </div>
 
-      <div className=' flex justify-center items-center bg-green-600 px-4 py-2 rounded-3xl text-white border-none'>
-        <button className='md:w-72 md:h-8 md:text-xl' onClick={()=>setOpen(true)} type="button">Add Expense</button>
+      <div className='w-full flex justify-evenly items-center gap-4 px-4 py-2 rounded-3xl text-white border-none'>
+        <button className='text-xl px-4 py-2 rounded-full bg-green-600' onClick={()=>setOpen(true)} type="button">Add Expense</button>
         <ExpenseModal open={open} onClose={() => setOpen(false)}>
           <div className='w-full flex flex-col gap-8 items-center' >
             <div className='flex flex-col gap-4 items-center'>
@@ -372,6 +404,13 @@ const Home = () => {
 
           </div>
         </ExpenseModal>
+
+        <div>
+          <button onClick={handleDownload} className='flex bg-red-500 px-4 py-2 gap-2 rounded-full text-black justify-center items-center font-semibold' type='button'>
+            <img className='w-6' src={assets.download} alt="" />
+            Download Report
+          </button>
+        </div>
       </div>
 
       <div className='grid grid-cols-4 justify-items-center items-center p-2 text-2xl font-bold gap-4 w-full'>

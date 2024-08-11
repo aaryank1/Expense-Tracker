@@ -7,6 +7,7 @@ import bin from './bin.png'
 import options from './options.png'
 import expense from './expense.png'
 import edit from './edit.png'
+import download from './download.png'
 
 export const assets = {
     budget_icon,
@@ -17,5 +18,6 @@ export const assets = {
     bin,
     options,
     expense,
-    edit
+    edit,
+    download
 }

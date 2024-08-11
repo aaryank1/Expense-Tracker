@@ -7,10 +7,7 @@ const incomeSchema = new mongoose.Schema({
         required: true,
     },
     income: {type: Number, required: true},
-    incomeDateInterval: {
-        startDate: {type: Date, required: true},
-        interval: {type: Number, required: true}
-    }
+    startDate: {type: Date, required: true},
 });
 
 const incomeModel = mongoose.model('income', incomeSchema);
