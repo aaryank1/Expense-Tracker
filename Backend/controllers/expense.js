@@ -33,6 +33,25 @@ const getCategoricalExpenses = async (req, res) =>{
     }
 }
 
+const getTotalExpense = async (req, res) => {
+    const { userId } = req.query;
+    let objectId = new mongoose.Types.ObjectId(userId);
+    try{
+        const result = await expenseModel.aggregate([
+            { $match: { userId: objectId }},
+            { $group: {
+                _id: "$userId",
+                totalExpense: { $sum: "$amount" }
+            }}
+        ]);
+        res.send(result);
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({message: 'Server Error'});       
+    }
+}
+
 const addExpense = async (req, res)=>{
     const userId = req.params.id
     const userExpense = req.body;
@@ -87,4 +106,4 @@ const deleteExpense = async (req, res) => {
     }
 }
 
-export {getExpenses, getCategoricalExpenses, addExpense, editExpense, deleteExpense}
+export {getExpenses, getCategoricalExpenses, getTotalExpense, addExpense, editExpense, deleteExpense}

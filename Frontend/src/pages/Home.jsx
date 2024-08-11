@@ -8,6 +8,7 @@ import { assets } from '../assets/assets';
 import ExpenseModal from './AddExpenseModal';
 import axios from 'axios';
 import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import EditExpenseModal from './EditExpenseModel';
 import DeleteExpenseModal from './DeleteExpenseModal';
 import Dropdown from './Dropdown';
@@ -21,7 +22,7 @@ ChartJS.register(
 )
 
 const Home = () => {
-  const { authState, regUserId, setRegUserId, setUserIncome } = useContext(UserContext)
+  const { authState, regUserId, setRegUserId, userIncome, setUserIncome } = useContext(UserContext)
   const navigate = useNavigate();
   
   const [ham, setHam] = useState(false);
@@ -35,6 +36,7 @@ const Home = () => {
 
   const [expenseData, setExpenseData] = useState([]);
   const [expenseId, setExpenseId] = useState('');
+  const [totalExpense, setTotalExpense] = useState('');
 
   const [categoryData, setCategoryData] = useState([]);
 
@@ -76,6 +78,20 @@ const Home = () => {
       }
     }
 
+    const fetchTotalExpense = async () => {
+      try{
+        const userId = localStorage.getItem('validUserAuth');
+        const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/spendwise/total/expense`, {
+          params: { userId: userId }
+        });
+        // console.log(response.data[0].totalExpense);
+        setTotalExpense(response.data[0].totalExpense);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
+
     const fetchIncome = async () =>{
       try{
         const userId = localStorage.getItem('validUserAuth');
@@ -87,7 +103,7 @@ const Home = () => {
         setIncome(response.data.income);
         setStartDate(formatDate);
         setIncomeInterval(response.data.incomeDateInterval.interval);
-        setUserIncome(response.data);
+        setUserIncome(response.data.income);
         // console.log(response.data.incomeDateInterval.interval);
       }
       catch(error){
@@ -113,16 +129,12 @@ const Home = () => {
 
       try{        
         const response = await axios.patch(`${import.meta.env.VITE_SERVER_URL}/user/income/${incomeId}`, updateIncomeData);
-        // toast.success("Income Modified Successfully", {
-        //   position: 'top-right',
-        //   autoClose: 3000,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined
-        // });
+        fetchIncome();
+        fetchTotalExpense();
+        toast.success("Income Modified Successfully");
       }
       catch(error){
+        toast.error("Error Modifying Income")
         console.log(error);
       }
 
@@ -131,6 +143,7 @@ const Home = () => {
   useEffect(()=>{
     fetchExpenses();
     fetchIncome();
+    fetchTotalExpense();
   }, [])
 
   useEffect(()=>{
@@ -179,15 +192,17 @@ const Home = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${regUserId}`, userInput);
-      // toast.success(`${response.data}`, {position: "top-right"});
+      toast.success(`${response.data}`, {position: "top-right"});
       setTitle('');
       setCategory('');
       setAmount('');
       setOpen(false);
       fetchExpenses();
+      fetchTotalExpense();
       {regUserId && filterExpenses()};
 
     } catch (error) {
+      toast.error("Error Adding Expense")
       console.log(error);
     }
   }
@@ -202,14 +217,16 @@ const Home = () => {
       }
       const edit = await axios.patch(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${expenseId}`, editData);
       // console.log(edit.data);
-      // toast.success("Expense Editted Successfully");
+      toast.success("Expense Editted Successfully");
       fetchExpenses();
       regUserId && filterExpenses();
+      fetchTotalExpense();
       setTitle('')
       setCategory('')
       setAmount('')
       setOpenEdit(false);
     } catch (error) {
+      toast.error("Error Modifying the Expense")
       console.log(error);
     }
   }
@@ -220,10 +237,12 @@ const Home = () => {
       
       const deleteExpense = await axios.delete(`${import.meta.env.VITE_SERVER_URL}/spendwise/expense/${expenseId}`);
       setOpenDelete(false);
-      // toast.success("Expense Deleted Successfully");
+      toast.success("Expense Deleted Successfully");
       fetchExpenses();
       regUserId && filterExpenses();
+      fetchTotalExpense();
     } catch (error) {
+      toast.error("Error Deleting the Expense")
       console.log(error);
     }
   }
@@ -285,15 +304,25 @@ const Home = () => {
       
       <h1 className='font-bold text-3xl'>Expense Analytics</h1>
 
-      <div className='w-full sm:w-4/5 md:w-3/5 lg:2/5 flex justify-center lg:justify-evenly'>
-        <Doughnut className='w-full'
-          data={data}
-          options = {options}
-        >
-        </Doughnut>
-        
-        <div className='hidden flex-col gap-4 lg:flex'>
-          abdcd
+      <div className='w-full flex justify-evenly items-center'>
+        <div className='w-full sm:w-4/5 md:w-3/5 flex justify-center lg:justify-between items-center'>
+          <Doughnut className='w-full'
+            data={data}
+            options = {options}
+          >
+          </Doughnut>
+          
+        </div>
+        <div className='hidden flex-col gap-4 lg:flex text-lg justify-center items-center bg-lime-200 p-6 rounded-xl'>
+          
+          <h1 className='font-bold text-2xl underline'>Expenditures</h1>
+          
+          <h1 className=' bg-orange-200 px-4 py-2 rounded-full w-full'>Monthly Income : <span className='font-bold'>{userIncome}</span></h1>
+
+          <h1 className=' bg-orange-200 px-4 py-2 rounded-full w-full'>Total Money Spent : <span className='font-bold'>{totalExpense}</span></h1>
+
+          <h1 className=' bg-orange-200 px-4 py-2 rounded-full w-full'>Expenditure : <span className='font-bold'>{totalExpense/userIncome * 100}%</span></h1>
+
         </div>
       </div>
 

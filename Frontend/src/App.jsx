@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   return (
-    <>
+    <div>
       <ToastContainer />
       <Routes>
         <Route path='/' element={<Login />} />
@@ -18,7 +18,7 @@ const App = () => {
         {/* <Route path='/login' element={<Settings />} /> */}
 
       </Routes>
-    </>
+    </div>
   )
 }
 
