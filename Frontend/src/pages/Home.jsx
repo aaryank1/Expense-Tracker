@@ -334,7 +334,7 @@ const Home = () => {
         </form>
       </EditIncomeModal>
       
-      <h1 className='font-bold text-3xl'>Expense Analytics</h1>
+      <h1 className='font-bold text-3xl'>Expense Analysis</h1>
 
       <div className='w-full flex justify-evenly items-center'>
         <div ref={doughnutRef} className='w-full sm:w-4/5 md:w-3/5 flex justify-center lg:justify-between items-center'>

@@ -1,10 +1,29 @@
 import mongoose from "mongoose";
 import expenseModel from "../models/expenseModel.js";
 
+
+const getStartOfMonth = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+};
+
+const getEndOfMonth = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+};
+
+const startOfMonth = getStartOfMonth();
+const endOfMonth = getEndOfMonth();
+
 const getExpenses = async (req, res)=>{
     const { userId } = req.query;
     try {
-        const expenses = await expenseModel.find({userId: userId});
+        const expenses = await expenseModel.find({userId: userId,
+            createdAt: {
+                $gte: startOfMonth,
+                $lte: endOfMonth
+            }
+        });
         
         res.send(expenses);
     } catch (error) {
@@ -18,7 +37,12 @@ const getCategoricalExpenses = async (req, res) =>{
     try {
         objectId = new mongoose.Types.ObjectId(userId);
       const results = await expenseModel.aggregate([
-        { $match : { userId: objectId }},
+        { $match : { userId: objectId,
+            createdAt:{
+                $gte: startOfMonth,
+                $lte: endOfMonth
+            }
+         }},
         { $group: {
             _id: "$category",
             totalAmount: { $sum: "$amount" }
@@ -38,7 +62,12 @@ const getTotalExpense = async (req, res) => {
     let objectId = new mongoose.Types.ObjectId(userId);
     try{
         const result = await expenseModel.aggregate([
-            { $match: { userId: objectId }},
+            { $match: { userId: objectId, 
+                createdAt:{
+                    $gte: startOfMonth,
+                    $lte: endOfMonth
+                }
+             }},
             { $group: {
                 _id: "$userId",
                 totalExpense: { $sum: "$amount" }
