@@ -14,6 +14,7 @@ const getUserIncome = async (req, res) => {
     }
 }
 
+
 const addUserIncome = async (req, res) => {
     const userIncomeData = req.body;
 
