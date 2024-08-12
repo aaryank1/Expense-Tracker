@@ -1,5 +1,6 @@
 # Spendwise
 
+https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 ## Overview
 
 **Spendwise** is a full-stack expense tracking application designed to help users manage and analyze their expenses effectively. The application allows users to add, view, and categorize their expenses, providing insights through visual reports. Spendwise includes features such as real-time updates, PDF report generation, and monthly expense tracking.
@@ -62,6 +63,5 @@ To get started with Spendwise, follow these steps:
 - **Income Feature**: Get Analysis of the expenses with respect to users income.
 
 
-https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 
 
