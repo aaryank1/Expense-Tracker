@@ -6,14 +6,12 @@ import userRouter from './routes/authRoutes.js';
 import expenseRouter from './routes/expenseRouter.js';
 import incomeRouter from './routes/incomeRouter.js';
 import cors from 'cors'
-import cronJob from './utils/cronScheduler.js'
 
 const app = express();
 const port = process.env.PORT || 3000;
 dotenv.config();
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(cronJob);
 connectDB();
 app.use(cors());
 app.use("/user", userRouter)            // .post('/user/register') OR .post('/user/login')
