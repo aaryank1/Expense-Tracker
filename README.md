@@ -7,6 +7,7 @@ https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 
 ## Features
 
+- **Email Validation**: Checks for valid email addresses during sign up.
 - **Expense Tracking**: Add, view, and categorize expenses.
 - **Real-Time Updates**: The home page updates with the latest expenses every time a new expense is submitted.
 - **Doughnut Chart**: Visualize expenses by category using a doughnut chart.
@@ -18,6 +19,7 @@ https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
 - **Chart Library**: Chart.js, react-chartjs-2
+- **Email Validation**: Abstract API
 
 ## Installation
 
