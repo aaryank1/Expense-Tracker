@@ -17,7 +17,6 @@ https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 - **Frontend**: React, Vite, Tailwind CSS
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB with Mongoose
-- **Email Service**: SendGrid, Nodemailer
 - **Chart Library**: Chart.js, react-chartjs-2
 
 ## Installation
