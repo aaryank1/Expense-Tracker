@@ -11,7 +11,6 @@ https://github.com/user-attachments/assets/d285f2bd-1a0c-40ed-a4d6-80bc659f9a71
 - **Real-Time Updates**: The home page updates with the latest expenses every time a new expense is submitted.
 - **Doughnut Chart**: Visualize expenses by category using a doughnut chart.
 - **PDF Reports**: Generate and download PDF reports of monthly expenses, including charts.
-- **Email Reports**: Schedule and send monthly PDF reports to users via email.
 
 ## Tech Stack
 
