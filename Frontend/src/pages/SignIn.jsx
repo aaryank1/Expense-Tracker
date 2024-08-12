@@ -48,7 +48,7 @@ const SignIn = () => {
     }
   }
 
-  const debounceValidEmail = useCallback(debounce((email) => validateEmail(email), 800), []);
+  const debounceValidEmail = useCallback(debounce((email) => validateEmail(email), 500), []);
 
   useEffect(()=>{
     if(email){

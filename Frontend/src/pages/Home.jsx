@@ -153,12 +153,6 @@ const Home = () => {
     }
   }, [authState])
 
-  const categoryTotals = categories.map(category => {
-    const categoricalData = categoryData.find(item => item._id===category);
-
-    return categoricalData ? categoricalData.totalAmount : 0;
-  })
-
   const handleHamburg = () => {
     setHam(false);
   }
@@ -233,7 +227,7 @@ const Home = () => {
     doc.setLineWidth(0.5); // Line width for the underline
     doc.line(x - margin, underlineY, x + textWidth + margin, underlineY);
 
-    doc.addImage(imgData, 'PNG', 8, 30, 200, 100);
+    doc.addImage(imgData, 'PNG', 8, 30, 190, 100);
 
     doc.autoTable({
       startY: 160,
@@ -285,6 +279,11 @@ const Home = () => {
   }
 
 
+  const categoryTotals = categories.map(category => {
+    const categoricalData = categoryData.find(item => item._id===category);
+
+    return categoricalData ? categoricalData.totalAmount : 0;
+  })
 
   const data = {
     labels: categories,
