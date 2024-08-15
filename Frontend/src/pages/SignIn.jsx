@@ -17,6 +17,7 @@ const SignIn = () => {
   const [visibility, setVisibility] = useState(false);
   const [error, setError] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const pwdRef = useRef();
   const visibilityRef = useRef();
@@ -80,7 +81,8 @@ const SignIn = () => {
         email: email,
         password: pwd
       }
-
+      
+      setLoading(true);
       try {
         const registerUser = await axios.post(`${import.meta.env.VITE_SERVER_URL}/user/register`, userData);
         // console.log(registerUser.data);
@@ -99,6 +101,8 @@ const SignIn = () => {
       } catch (error) {
         console.log(error);
       }
+
+      setLoading(false);
     }
     else{
       alert("Invalid Email Address.");
@@ -106,7 +110,11 @@ const SignIn = () => {
     
   }
 
-  return (
+  return loading ? (
+    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+      <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+    </div>
+  ): (
     <div className='w-full h-screen flex justify-center items-center text-xl'>
       <div className='p-4 rounded-lg flex flex-col gap-8 justify-center items-center text-center w-full h-full md:w-1/3 md:h-96 md:border md:border-black'>
         

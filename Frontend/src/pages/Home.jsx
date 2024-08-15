@@ -51,6 +51,8 @@ const Home = () => {
   const [income, setIncome] = useState('');
   const [startDate, setStartDate] = useState('');
 
+  const [loading, setLoading] = useState(false);
+
   const doughnutRef = useRef();
 
   const categories = ['Essentials', 'Entertainment', 'Education', 'Housing', 'HealthCare', 'Clothing', 'Personal Care', 'Investments', 'Miscellaneous'];
@@ -114,6 +116,7 @@ const Home = () => {
     }
 
     const editIncome = async (e)=>{
+      setLoading(true);
       e.preventDefault();
       setOpenModIncome(false);
 
@@ -136,7 +139,7 @@ const Home = () => {
         toast.error("Error Modifying Income")
         console.log(error);
       }
-
+      setLoading(false);
     }
 
   useEffect(()=>{
@@ -167,8 +170,6 @@ const Home = () => {
     }
   })
 
-
-
   const handleExpense = async (e) => {
 
     e.preventDefault();
@@ -177,6 +178,8 @@ const Home = () => {
       alert("Please enter a Category for your Expense")
       return;
     }
+
+    setLoading(true);
 
     const userInput = {
       userId: regUserId,
@@ -200,9 +203,12 @@ const Home = () => {
       toast.error("Error Adding Expense")
       console.log(error);
     }
+
+    setLoading(false);
   }
 
   const handleDownload = async () => {
+    setLoading(true);
     const doc = new jsPDF();
 
     const canvas = html2canvas(doughnutRef.current);
@@ -236,9 +242,11 @@ const Home = () => {
     });
 
     doc.save('expense-report.pdf');
+    setLoading(false);
   }
 
   const handleEdit = async (e) => {
+    setLoading(true);
     try {
       e.preventDefault();
       const editData = {
@@ -260,9 +268,12 @@ const Home = () => {
       toast.error("Error Modifying the Expense")
       console.log(error);
     }
+
+    setLoading(false);
   }
 
   const handleDelete = async (e) => {
+    setLoading(true);
     try {
       e.preventDefault();
       
@@ -276,6 +287,8 @@ const Home = () => {
       toast.error("Error Deleting the Expense")
       console.log(error);
     }
+
+    setLoading(false);
   }
 
 
@@ -318,6 +331,11 @@ const Home = () => {
       </div>
 
       <EditIncomeModal openModIncome={openModIncome} onClose={()=>setOpenModIncome(false)}>
+        {loading ? (
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+          </div>
+        ): 
         <form onSubmit={editIncome} className='flex flex-col justify-between border text-3xl p-8 gap-8 rounded-lg' method="patch">
           <div className='flex flex-col gap-4'>
             <label htmlFor="income">Monthly Income</label>
@@ -330,7 +348,7 @@ const Home = () => {
           </div>
 
           <button className='border border-black rounded-md p-2 bg-green-600 text-white border-none' type="submit">Submit</button>
-        </form>
+        </form>}
       </EditIncomeModal>
       
       <h1 className='font-bold text-3xl'>Expense Analysis</h1>
@@ -366,6 +384,12 @@ const Home = () => {
             <h1 className='text-3xl font-bold'>Add Expense</h1>
             </div>
 
+            { loading ? (
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+              </div>
+            ): 
+            
             <form onSubmit={handleExpense} className='flex flex-col gap-6 text-2xl' method="post">
 
               <div className='flex flex-col gap-1'>
@@ -399,7 +423,7 @@ const Home = () => {
                 <button className='text-white bg-green-600 px-4 py-2 rounded-lg' type="submit">Submit</button>
               </div>
 
-            </form>
+            </form>}
 
           </div>
         </ExpenseModal>
@@ -447,6 +471,11 @@ const Home = () => {
                 </div>
 
 
+                {loading ? (
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                    <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                  </div>
+                ): 
                 <form onSubmit={handleEdit} className='flex flex-col gap-6 text-2xl' method='patch'>
 
                   <div className='flex flex-col gap-1'>
@@ -484,7 +513,7 @@ const Home = () => {
                     <button className='text-white bg-green-600 px-4 py-2 rounded-lg' type="submit">Submit</button>
                   </div>
 
-                </form>
+                </form>}
               </div>
             </EditExpenseModal>
             <img onClick={() => {
@@ -498,6 +527,11 @@ const Home = () => {
                   <h1 className='text-3xl font-bold'>Delete Expense</h1>
                 </div>
 
+                {loading ? (
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                    <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                  </div>
+                ): 
                 <form onSubmit={handleDelete} className='flex flex-col text-center' method='delete'>
 
                   <p className='text-xl text-gray-500'>Are You Sure You Wish To Delete this Expense?</p>
@@ -509,7 +543,7 @@ const Home = () => {
                     <button className='bg-red-600 px-6 py-3 rounded-lg' type='submit'>Delete</button>
                   </div>
 
-                </form>
+                </form>}
 
               </div>
             </DeleteExpenseModal>
