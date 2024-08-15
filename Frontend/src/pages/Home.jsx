@@ -331,9 +331,9 @@ const Home = () => {
       </div>
 
       <EditIncomeModal openModIncome={openModIncome} onClose={()=>setOpenModIncome(false)}>
-        {loading ? (
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+        { loading ? (
+        <div className='w-full h-full flex justify-center items-center'>
+            <div className='w-16 h-16 bg-white border-t-4 border-green-400 animate-spin rounded-full'></div>
           </div>
         ): 
         <form onSubmit={editIncome} className='flex flex-col justify-between border text-3xl p-8 gap-8 rounded-lg' method="patch">
@@ -384,11 +384,11 @@ const Home = () => {
             <h1 className='text-3xl font-bold'>Add Expense</h1>
             </div>
 
-            { loading ? (
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
-              </div>
-            ): 
+            {  loading ? (
+                <div className='w-full h-full flex justify-center items-center'>
+                  <div className='w-16 h-16 bg-white border-t-4 border-green-400 animate-spin rounded-full'></div>
+                </div>
+              ): 
             
             <form onSubmit={handleExpense} className='flex flex-col gap-6 text-2xl' method="post">
 
@@ -471,9 +471,9 @@ const Home = () => {
                 </div>
 
 
-                {loading ? (
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                    <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                { loading ? (
+                  <div className='w-full h-full flex justify-center items-center'>
+                    <div className='w-16 h-16 bg-white border-t-4 border-green-400 animate-spin rounded-full'></div>
                   </div>
                 ): 
                 <form onSubmit={handleEdit} className='flex flex-col gap-6 text-2xl' method='patch'>
@@ -527,9 +527,9 @@ const Home = () => {
                   <h1 className='text-3xl font-bold'>Delete Expense</h1>
                 </div>
 
-                {loading ? (
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                    <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                { loading ? (
+                  <div className='w-full h-full flex justify-center items-center'>
+                    <div className='w-16 h-16 bg-white border-t-4 border-green-400 animate-spin rounded-full'></div>
                   </div>
                 ): 
                 <form onSubmit={handleDelete} className='flex flex-col text-center' method='delete'>
