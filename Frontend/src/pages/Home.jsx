@@ -324,7 +324,11 @@ const Home = () => {
     }
   }
 
-  return (
+  return loading ? (
+    <div className='w-full h-full flex justify-center items-center'>
+        <div className='w-16 h-16 bg-white border-t-4 border-green-400 animate-spin rounded-full'></div>
+      </div>
+    ): (
     <div className='flex flex-col items-center gap-4'>
       <div className='flex items-center justify-between gap-8 bg-gray-500 w-full h-16'>
         <img className='w-40 h-full' src={assets.logo} alt="" />
