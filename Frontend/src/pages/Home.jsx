@@ -143,8 +143,10 @@ const Home = () => {
     }
 
   useEffect(()=>{
+    setLoading(true);
     fetchExpenses();
     fetchIncome();
+    setLoading(false);
     if(expenseData){
       fetchTotalExpense();
     }
