@@ -14,6 +14,11 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
 connectDB();
 app.use(cors());
+
+app.get("/health", (req, res) => {
+    res.send("Server Live");
+})
+
 app.use("/user", userRouter)            // .post('/user/register') OR .post('/user/login')
 app.use("/spendwise", expenseRouter)    // .get('/spendwise/expenses) , .post('/spendwise/expense) , .put('/spendwise/expense) , .delete('/spendwise/expense)
 app.use("/user", incomeRouter)
